@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Väriyhdistelmä</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+            padding: 20px;
+        }
+        canvas {
+            border: 3px solid #000;
+            margin-top: 20px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #colorContainer {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Valitse värit yhdistettäväksi</h2>
+<div id="colorContainer">
+    <input type="color" value="#ff0000">
+</div>
+<button onclick="addColor()">Lisää väri</button>
+<button onclick="updateGradient()">Luo gradientti</button>
+<button onclick="downloadImage()">Lataa kuva</button>
+
+<h3>Yhdistetty väri</h3>
+<canvas id="colorCanvas" width="600" height="100"></canvas>
+
+<script>
+    function addColor() {
+        let colorContainer = document.getElementById('colorContainer');
+        let newColorPicker = document.createElement('input');
+        newColorPicker.type = 'color';
+        newColorPicker.value = '#ffffff';
+        colorContainer.appendChild(newColorPicker);
+        colorContainer.appendChild(document.createElement('br'));
+    }
+
+    function updateGradient() {
+        let colorContainer = document.getElementById('colorContainer');
+        let colorPickers = colorContainer.querySelectorAll('input[type="color"]');
+        
+        let canvas = document.getElementById('colorCanvas');
+        let ctx = canvas.getContext('2d');
+        let gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+        
+        let step = 1 / (colorPickers.length - 1);
+        
+        colorPickers.forEach((picker, index) => {
+            gradient.addColorStop(index * step, picker.value);
+        });
+
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function downloadImage() {
+        let canvas = document.getElementById('colorCanvas');
+        let image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+
+        let link = document.createElement('a');
+        link.download = 'gradient.png';
+        link.href = image;
+        link.click();
+    }
+</script>
+
+</body>
+</html>
